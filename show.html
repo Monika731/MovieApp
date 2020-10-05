@@ -1,0 +1,77 @@
+<html>
+  <head>
+      <link rel="stylesheet" type="text/css" href="myStyle.css">
+  </head>
+  <body id = "body">
+      <h1>
+        List of Movies and Shows
+      </h1>
+      <br/><br/>
+      <form id="myForm">
+        Movie/Show name
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <input type='text' id='text' name='text'/>
+	       <br/><br/><br/><br/>
+        Enter Page
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type='text' id='page' name='page'/>
+	       <br/><br/><br/><br/>
+	   <input type='button' onclick="userAction()" value='Search' /> &nbsp;&nbsp;&nbsp;
+       <button type="button" onClick="window.location.reload();">Reset</button>
+     </form>
+     <script>
+      const userAction = async () => {
+      var title = document.getElementById("text").value;
+      
+      var page = document.getElementById("page").value; 
+      
+      const response = await fetch("http://www.omdbapi.com/?s="+title+"&page="+page+"&apikey=d0fc3644");
+      const myJson = await response.json();
+     
+      var text = document.createElement("p");
+      var total;
+	  if(myJson.Response == "False") {
+          total = document.createTextNode("Movie Not Found!! Please enter proper movie name and valid page number!!!");
+      } else if(myJson.Search.length != 0) {
+          total = document.createTextNode("Total Results: "+ myJson.totalResults);
+      }
+	  text.appendChild(total);
+	  document.getElementById('body').appendChild(text);
+          
+      var cell, row, table, header;
+      table = document.createElement('table');
+        header = table.createTHead();
+          row = header.insertRow(0);
+          cell = row.insertCell(0);
+          cell.innerHTML = "Movie Title";
+          cell.style.backgroundColor = "lightblue";
+          cell.style.border = "1px dotted black"
+          cell = row.insertCell(1);
+          cell.innerHTML = "Year";
+          cell.style.backgroundColor = "lightblue";
+          cell.style.border = "1px dotted black"
+          cell = row.insertCell(2);
+          cell.innerHTML = "Poster";
+          cell.style.backgroundColor = "lightblue";
+          cell.style.border = "1px dotted black"
+      for (var i = 0; i < myJson.Search.length; i++) {
+        var counter = myJson.Search[i];
+        row = table.insertRow(1); 
+        cell = row.insertCell(0);
+        cell.innerHTML = counter.Title;
+        cell = row.insertCell(1);
+        cell.innerHTML = counter.Year;
+        cell = row.insertCell(2);
+        var img = document.createElement('img');
+        if(counter.Poster == "N/A") {
+         cell.innerHTML = "**No Image Found**";  
+        } else {
+            img.src = counter.Poster;
+            cell.appendChild(img);
+        }
+      }
+      document.getElementById("body").appendChild(table);
+    }
+    </script>
+  </body>
+</html>
